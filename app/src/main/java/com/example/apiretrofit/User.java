@@ -3,24 +3,26 @@ package com.example.apiretrofit;
 import com.google.gson.annotations.SerializedName;
 
 public class User {
-
+    @SerializedName("id")
     private String id;
-    private String name;
-    private String email;
+
+@SerializedName("name")
+    private String names;
+@SerializedName("email")
+    private String emails;
 
     public User(String name, String emails){
-        this.name=name;
-        this.email=emails;
+        this.names=name;
+        this.emails=emails;
     }
 
 
-
     public String getId() { return id; }
-    public String getName() { return name; }
-    public String getEmail() { return email; }
+    public String getName() { return names; }
+    public String getEmail() { return emails; }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.emails = email;
     }
 
     public void setId(String id) {
@@ -28,7 +30,7 @@ public class User {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.names = name;
     }
 }
 

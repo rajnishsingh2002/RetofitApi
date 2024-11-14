@@ -1,5 +1,6 @@
 package com.example.apiretrofit;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -7,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -59,8 +61,10 @@ public class MainActivity extends AppCompatActivity implements ItemClick {
                     @Override
                     public void onResponse(Call<User> call, Response<User> response) {
                         if (response.isSuccessful()) {
+                            editTextName.getText().clear();
+                            editTextEmail.getText().clear();
                             Toast.makeText(MainActivity.this, "send data sucessfully", Toast.LENGTH_SHORT).show();
-                            getUser();
+                            getUser("name");
                         } else {
                             Toast.makeText(MainActivity.this, "Data not send", Toast.LENGTH_SHORT).show();
                         }
@@ -69,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements ItemClick {
                     @Override
                     public void onFailure(Call<User> call, Throwable t) {
                         Toast.makeText(MainActivity.this, "data falied", Toast.LENGTH_SHORT).show();
+                        showErrorDialog("failed to create data");
                     }
                 });
 
@@ -76,13 +81,30 @@ public class MainActivity extends AppCompatActivity implements ItemClick {
         });
 
       // get All users
-        getUser();
+        getUser("name");
 
     }
 
-    private void getUser() {
+
+    // Call this method where you want to show the error dialog
+    private void showErrorDialog(String errorMessage) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Error");
+        builder.setMessage(errorMessage);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();  // Dismiss the dialog when OK is pressed
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void getUser(String name) {
         // Make the API call for get
-        Call<List<User>> call = RetrofitInstance.getApi().getUsers();
+        Call<List<User>> call = RetrofitInstance.getApi().getSortedUser(name);
         call.enqueue(new Callback<List<User>>() {
             @Override
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
@@ -100,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements ItemClick {
             public void onFailure(Call<List<User>> call, Throwable t) {
                 Toast.makeText(MainActivity.this, "failed", Toast.LENGTH_SHORT).show();
                 Log.e("MainActivity", "API call failed", t);
+                showErrorDialog("failed to fetch data");
             }
         });
     }
@@ -111,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements ItemClick {
         editTextEmail.setText(user.getEmail());
 
         Button buttonCreateUser = findViewById(R.id.buttonCreateUser);
+        buttonCreateUser.setText("update");
 
         buttonCreateUser.setOnClickListener(v -> {
             String name = editTextName.getText().toString().trim();
@@ -124,11 +148,13 @@ public class MainActivity extends AppCompatActivity implements ItemClick {
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
                     Toast.makeText(MainActivity.this, "User Update"+user.getId(), Toast.LENGTH_SHORT).show();
+
                 }
 
                 @Override
                 public void onFailure(Call<User> call, Throwable t) {
                     Toast.makeText(MainActivity.this, "User Not Update", Toast.LENGTH_SHORT).show();
+                    showErrorDialog("failed to update data");
                 }
             });
         });
