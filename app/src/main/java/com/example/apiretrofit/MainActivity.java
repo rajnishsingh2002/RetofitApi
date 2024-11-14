@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements ItemClick {
     }
 
 
-    // Call this method where you want to show the error dialog
+    // dialog box for showing error msg
     private void showErrorDialog(String errorMessage) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Error");
